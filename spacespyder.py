@@ -44,39 +44,54 @@ boobaimage=Canevas.create_image(boobax,200,image=booba)
 tirer=False
 cdx=kaarisx
 cdy=795
-gag=Canevas.create_image(cdx,795,image=cd)
+
+
 # Canevaskaaris=Canvas(Canevas,width=100,height=100)
 # #Canevaskaaris.pack(side=BOTTOM,pady=10)
 # Canevaskaaris.place(x=kaarisx,y=850)
 
 # Canevaskaaris.create_image(0,0,anchor=NW, image=kaaris)
 
-
+class dvd:
+    def __init__(self):
+        self.posx=0
+        self.posy=795
+        
+    
 
 def deplacerbooba(boobadx):
     global boobax,cdy,cdx,tirer
+    gag=Canevas.create_image(kaarisx,cdy,image=cd)
     while True:
         
         boobax+=boobadx
-        cdy+=10
+            
         if boobax+50>=1500:
             boobadx=-boobadx
         if boobax-50<=0:
             boobadx=-boobadx
         if cdy<= 0:
             tirer = False
-            cdy==795
+            cdy=795
+            gag=Canevas.create_image(kaarisx,cdy,image=cd)
         if tirer == True:        
             Canevas.move(gag,0,-10)
+            cdy-=10    
+        print(cdy)
+        print(tirer)
         Canevas.move(boobaimage,boobadx,0)
 
         time.sleep(0.05)
 
 def tir(event):
-    global kaarisx,tirer
-    tirer=True
-    gag=Canevas.create_image(cdx,795,image=cd)
-    
+    global kaarisx,tirer,cdx,cdy
+    if tirer==False:          
+        tirer=True
+        cdx=kaarisx
+        gag=Canevas.create_image(kaarisx,cdy,image=cd)
+        prin(cdy)
+    else:
+        return
 
 
 t1=threading.Thread(target=lambda : deplacerbooba(boobadx))
