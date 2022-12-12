@@ -41,6 +41,10 @@ Canevas.pack(fill=BOTH, expand=True)
 Canevas.create_image(0,0,anchor=NW, image=background)
 kaarisimage=Canevas.create_image(kaarisx,850,image=kaaris)
 boobaimage=Canevas.create_image(boobax,200,image=booba)
+tirer=False
+cdx=kaarisx
+cdy=795
+gag=Canevas.create_image(cdx,795,image=cd)
 # Canevaskaaris=Canvas(Canevas,width=100,height=100)
 # #Canevaskaaris.pack(side=BOTTOM,pady=10)
 # Canevaskaaris.place(x=kaarisx,y=850)
@@ -50,53 +54,62 @@ boobaimage=Canevas.create_image(boobax,200,image=booba)
 
 
 def deplacerbooba(boobadx):
-    global boobax
+    global boobax,cdy,cdx,tirer
     while True:
         
         boobax+=boobadx
+        cdy+=10
         if boobax+50>=1500:
             boobadx=-boobadx
         if boobax-50<=0:
             boobadx=-boobadx
-            
-        
+        if cdy<= 0:
+            tirer = False
+            cdy==795
+        if tirer == True:        
+            Canevas.move(gag,0,-10)
         Canevas.move(boobaimage,boobadx,0)
+
         time.sleep(0.05)
+
+def tir(event):
+    global kaarisx,tirer
+    tirer=True
+    gag=Canevas.create_image(cdx,795,image=cd)
+    
 
 
 t1=threading.Thread(target=lambda : deplacerbooba(boobadx))
 t1.start()
-t1=threading.Thread(target=lambda : tir(boobadx))
-t1.start()
+
 
 def left(event):
-    global kaarisx
+    global kaarisx,cdx
     if kaarisx-50<=0:
         return
     else:
             
         x = -10
         kaarisx+=x
+        cdx+=x
         Canevas.move(kaarisimage,x,y)
     
 def right(event):
-    global kaarisx
+    global kaarisx,cdx
     if kaarisx+50>=1500:
         return
     else:
             
         x = 10
         kaarisx+=x
+        cdx+=x
         Canevas.move(kaarisimage,x,y)
         
-# def tir(event):
-#     global kaarisx
-#     cd=Canevas.create_image(kaarisx,850,image=cd)
 
 
 Mafenetre.bind("<Left>",left)
 Mafenetre.bind("<Right>",right)
-# Mafenetre.bind("<space>",tir)
+Mafenetre.bind("<space>",tir)
 
 
 
