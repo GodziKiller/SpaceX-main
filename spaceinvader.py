@@ -10,6 +10,7 @@ from tkinter import *
 import threading
 import time
 import random
+import pygame
 #valeur position initiale vaisseau/alien
 posvx=550
 posvy=650
@@ -31,11 +32,13 @@ class Spaceship:
     def deplacement(self,dir):
         global posvx
         if dir==1:
-            self.x+=10
-            posvx=self.x
+            if self.x<1245:
+                self.x+=10
+                posvx=self.x
         elif dir==-1:
-            self.x+=-10
-            posvx=self.x
+            if self.x>0:
+                self.x+=-10
+                posvx=self.x
         else:
             pass
         self.affichage()
@@ -65,24 +68,25 @@ class TirSpaceship:
         self.tiry=posvy
         # self.apparence=Canevas.create_line(self.x+15 , self.y-50 , self.x+15 ,self.y , fill='white')
         self.apparence=Canevas.create_image(self.tirx+15, self.tiry, image=ImageTir)
-        self.tirage=True
+        self.tirage=1
         TirSpaceship.compteur+=1
         print("letirvamonter")
         self.tirmonte()
+
     
     def affichage(self):
         Canevas.coords(self.apparence , self.tirx+15 , self.tiry)
 
 
     def tirmonte(self):
-        if self.tirage:
+        if self.tirage==1:
             self.tiry-=10
             self.affichage()
-            self.FinTir()
+            self.fintir()
             Mafenetre.after(5,self.tirmonte)
 
-    def FinTir(self):
-        global ListeTirs,Score
+    def fintir(self):
+        global ListeTirs,Score,Listeennemis
         if self.tiry<0:
             print("finito")
             self.tirage=False
@@ -94,9 +98,15 @@ class TirSpaceship:
 
             if self.tirx<=booba.boobax+50 and self.tirx+15>booba.boobax-50:
                 if self.tiry+15>booba.boobay-50 and self.tiry<booba.boobay+50:
+                    # Canevas.delete(booba.apparence)
+                    # # booba.apparence = Canevas.create_image(booba.boobax,booba.boobay,image=ImageAlienmort)
+
+                    # # boobamort(booba)
+                    # print("touché")
+                    # Canevas.after(1000)
+                    # print("careprend")
                     booba.boobay=650
                     self.tiry=-10
-                    print("touché")
                     Score+=10
                     print(Score)
 
@@ -125,7 +135,7 @@ def mouvementAlien():
         booba.affichage()
         Mafenetre.after(50,mouvementAlien)
     else:
-        return()
+        return
 
     #         booba.affichage()
     # print(Listeennemis)
@@ -134,10 +144,11 @@ def mouvementAlien():
 
 
 def restartbooba():
+
     posax=random.randint(50,1230)
-    booba=Alien(posax)
-    
+    booba=Alien(posax)   
     Listeennemis.append(booba)
+
     mouvementAlien()
 
 
@@ -152,6 +163,7 @@ def right(event):
 
 def Tir(event):
     print("creerle tir")
+    pygame.mixer.Channel(0).play(pygame.mixer.Sound('TIRsound.wav'))
     nouveautir=TirSpaceship()
     ListeTirs.append(nouveautir)
 
@@ -163,35 +175,44 @@ def Tir(event):
 Mafenetre=Tk()
 Mafenetre.geometry("1280x720")
 Framebase=Frame(Mafenetre, relief ='groove', bg='green',width=1500,height=1000)
-
 Framebase.pack(fill=BOTH, expand=True)
 
 
 
 #importation liste des images
-
 ImageVaisseau=PhotoImage(file='kaarisvaisseau.png')
 ImageBackground=PhotoImage(file='backgroundopera.png')
 ImageAlien=PhotoImage(file='booba.png')
+ImageAlienmort=PhotoImage(file="boobachoc.png")
 ImageTir=PhotoImage(file='cd.png')
+
+
 #formation des canvas
 Canevas= Canvas(Framebase,width=1500,height=1000)
 Canevas.create_image(600,300,image=ImageBackground)
+Canevas.pack(fill=BOTH, expand=True)
+
+#attribution des touches
 Mafenetre.bind("<Left>",left)
 Mafenetre.bind("<Right>",right)
 Mafenetre.bind("<space>",Tir)
 
-Canevas.pack(fill=BOTH, expand=True)
 
 
 
 
 
+#création des objets
 vaisseau=Spaceship()
 booba=Alien(posax)
 Listeennemis.append(booba)
 mouvementAlien()
 # t1=threading.Thread(target=lambda : booba.mouvementAlien())
 # t1.start()
+
+#lancement de la musique
+pygame.mixer.init(frequency=44100, size=-16, channels=3, buffer=1012)
+pygame.mixer.music.load("TCHOUINE.wav")
+pygame.mixer.music.play(loops=-1, start=0.0)
 
 Mafenetre.mainloop()
